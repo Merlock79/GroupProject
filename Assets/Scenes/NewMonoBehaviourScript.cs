@@ -1,24 +1,24 @@
-using System;
 using UnityEngine;
 
-public class MoneyBank : MonoBehaviour
+public class PlayerWatering : MonoBehaviour
 {
-    public event Action<float> OnMoneyChanged;
-
-    public float currentMoney = 0f;
-    public float moneyPerSecond = 1f;
+    public float distance = 5f;
 
     void Update()
     {
-        currentMoney += moneyPerSecond * Time.deltaTime;
-        OnMoneyChanged?.Invoke(currentMoney);
-    }
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+            RaycastHit hit;
 
-    public void SpendMoney(float amount)
-    {
-        currentMoney -= amount;
-        if (currentMoney < 0) currentMoney = 0;
-
-        OnMoneyChanged?.Invoke(currentMoney);
+            if (Physics.Raycast(ray, out hit, distance))
+            {
+                MagicFlower flower = hit.collider.GetComponent<MagicFlower>();
+                if (flower != null)
+                {
+                    flower.Water();
+                }
+            }
+        }
     }
 }

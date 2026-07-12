@@ -1,16 +1,21 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-public class NewMonoBehaviourScript2 : MonoBehaviour
+public class ColorChangingFlower : MagicFlower
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public Color newColor = Color.magenta;
+    private Renderer rend;
+
+    private void Start()
     {
-        
+        rend = GetComponent<Renderer>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void Water()
     {
-        
+        if (rend != null)
+        {
+            rend.material.color = newColor;
+            Debug.Log("Квітка змінила колір!");
+        }
     }
 }

@@ -1,16 +1,13 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-public class NewMonoBehaviourScript1 : MonoBehaviour
+public class CloningFlower : MagicFlower
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public GameObject flowerPrefab;
 
-    // Update is called once per frame
-    void Update()
+    public override void Water()
     {
-        
+        Vector3 spawnPos = transform.position + new Vector3(1f, 0f, 0f);
+        Instantiate(flowerPrefab, spawnPos, Quaternion.identity);
+        Debug.Log("Квітка створила копію!");
     }
 }
