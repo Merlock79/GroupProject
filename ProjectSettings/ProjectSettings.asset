@@ -831,6 +831,7 @@ PlayerSettings:
   webWasm2023: 0
   webEnableSubmoduleStrippingCompatibility: 0
   scriptingDefineSymbols:
+<<<<<<< HEAD
     Android: BCG_RCCP;BCG_RCCP_LITE;BCG_URP
     EmbeddedLinux: BCG_RCCP;BCG_RCCP_LITE;BCG_URP
     GameCoreScarlett: BCG_RCCP;BCG_RCCP_LITE;BCG_URP
@@ -849,6 +850,9 @@ PlayerSettings:
     XboxOne: BCG_RCCP;BCG_RCCP_LITE;BCG_URP
     iPhone: BCG_RCCP;BCG_RCCP_LITE;BCG_URP
     tvOS: BCG_RCCP;BCG_RCCP_LITE;BCG_URP
+=======
+    Standalone: SENTIS_ANALYTICS_ENABLED;APP_UI_EDITOR_ONLY
+>>>>>>> dcbefe1a87da46935f18e865eee6a5049fc96853
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
