@@ -1,3 +1,4 @@
+
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
 using UnityEngine.InputSystem;
@@ -43,6 +44,18 @@ public class AdvancedCameraController : MonoBehaviour
     [SerializeField] private float fovSmooth = 8f;
     [SerializeField] private KeyCode sprintKey = KeyCode.LeftShift;
 
+    [Header("Crouch / Run Camera")]
+    [Tooltip("How much the camera lowers while crouching (meters).")]
+    [SerializeField] private float crouchHeight = 0.6f;
+    [Tooltip("How quickly the camera moves to/from crouch height.")]
+    [SerializeField] private float crouchSmooth = 10f;
+    [Tooltip("Additional sideways offset when crouch+shift (running) is active.")]
+    [SerializeField] private float runSideOffset = 0.25f;
+    [Tooltip("Roll angle (degrees) applied while crouch+shift to simulate lean.")]
+    [SerializeField] private float runTiltAngle = 6f;
+    [Tooltip("How quickly the run sideways/tilt transitions.")]
+    [SerializeField] private float runTiltSmooth = 10f;
+
     [Header("Camera Shake")]
     [SerializeField] private float shakeStrength = 0.2f;
     [SerializeField] private float shakeDuration = 0.15f;
@@ -50,6 +63,11 @@ public class AdvancedCameraController : MonoBehaviour
 
     // Exposed read/write so PlayerMovement can inform the camera of sprinting.
     internal bool isSprinting;
+
+    // runtime states for smoothing
+    private float currentCrouch = 0f;
+    private float currentRunSide = 0f;
+    private float currentRunTilt = 0f;
 
     void Start()
     {
@@ -85,6 +103,7 @@ public class AdvancedCameraController : MonoBehaviour
         HandleShoulderSwitch();
         HandleFOV();
         HandleShakeTimer();
+        UpdateCrouchAndRunStates();
     }
 
     void LateUpdate()
@@ -195,15 +214,37 @@ public class AdvancedCameraController : MonoBehaviour
         shakeTimer = shakeDuration;
     }
 
+    // Update crouch/run smoothing targets
+    void UpdateCrouchAndRunStates()
+    {
+        bool crouchHeld = Key(KeyCode.Q);
+        bool shiftHeld = Key(sprintKey);
+
+        float targetCrouch = crouchHeld ? crouchHeight : 0f;
+        currentCrouch = Mathf.Lerp(currentCrouch, targetCrouch, Time.deltaTime * crouchSmooth);
+
+        bool runLean = crouchHeld && shiftHeld;
+        float targetRunSide = runLean ? currentShoulder * runSideOffset : 0f;
+        currentRunSide = Mathf.Lerp(currentRunSide, targetRunSide, Time.deltaTime * runTiltSmooth);
+
+        float targetRunTilt = runLean ? currentShoulder * -runTiltAngle : 0f;
+        currentRunTilt = Mathf.Lerp(currentRunTilt, targetRunTilt, Time.deltaTime * runTiltSmooth);
+    }
+
     // ----- Positioning, collision and smoothing -----
     void HandleCameraPosition()
     {
         if (player == null)
             return;
 
-        Quaternion rotation = Quaternion.Euler(rotX, rotY, 0f);
-        Vector3 targetPos = player.position + Vector3.up * 1.7f;
-        Vector3 shoulderPos = rotation * Vector3.right * currentShoulder * shoulderOffset;
+        // Rotation includes roll tilt (currentRunTilt)
+        Quaternion rotation = Quaternion.Euler(rotX, rotY, currentRunTilt);
+
+        // Base head position (adjusted down when crouching)
+        Vector3 targetPos = player.position + Vector3.up * (1.7f - currentCrouch);
+
+        // Shoulder offset (apply additional run-side offset when applicable)
+        Vector3 shoulderPos = rotation * Vector3.right * currentShoulder * (shoulderOffset + currentRunSide);
 
         Vector3 desiredCameraPos = targetPos + shoulderPos - rotation * Vector3.forward * currentDistance;
 

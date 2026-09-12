@@ -1,3 +1,4 @@
+
 using System;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
@@ -9,15 +10,23 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     [Tooltip("Walking speed (units/sec).")]
-    [SerializeField] private float walkSpeed = 3f;
+    [SerializeField] private float walkSpeed = 4f;            // increased for slightly faster walking
     [Tooltip("Sprinting speed (units/sec).")]
-    [SerializeField] private float sprintSpeed = 6f;
+    [SerializeField] private float sprintSpeed = 9f;          // increased for faster sprinting
     [Tooltip("Crouching speed (units/sec).")]
     [SerializeField] private float crouchSpeed = 1.5f;
-    [Tooltip("Rotation smoothing factor.")]
-    [SerializeField] private float rotationSmooth = 12f;
+    [Tooltip("Rotation smoothing factor. Lower = slower turning.")]
+    [SerializeField] private float rotationSmooth = 4f;       // reduced to make turning noticeably slower
 
     private float currentSpeed;
+
+    [Header("Input")]
+    [Tooltip("Key used to sprint.")]
+    [SerializeField] private KeyCode sprintKey = KeyCode.LeftShift;
+    [Tooltip("Key used to crouch.")]
+    [SerializeField] private KeyCode crouchKey = KeyCode.Q;
+    [Tooltip("When true crouch is hold; when false crouch toggles on key press.")]
+    [SerializeField] private bool crouchHold = true;
 
     [Header("States")]
     [SerializeField] private bool isSprinting = false;
@@ -77,9 +86,13 @@ public class PlayerMovement : MonoBehaviour
             move2D.x = Input.GetAxisRaw("Horizontal");
             move2D.y = Input.GetAxisRaw("Vertical");
 
-            isSprinting = Input.GetKey(KeyCode.LeftShift) && !isCrouching && (Mathf.Abs(move2D.x) + Mathf.Abs(move2D.y)) > 0.1f;
+            // Sprint: hold sprintKey while moving (and not crouching)
+            isSprinting = Input.GetKey(sprintKey) && !isCrouching && (Mathf.Abs(move2D.x) + Mathf.Abs(move2D.y)) > 0.1f;
 
-            if (Input.GetKeyDown(KeyCode.C))
+            // Crouch: either hold or toggle based on inspector setting
+            if (crouchHold)
+                isCrouching = Input.GetKey(crouchKey);
+            else if (Input.GetKeyDown(crouchKey))
                 isCrouching = !isCrouching;
 
             legacySucceeded = true;
@@ -96,16 +109,28 @@ public class PlayerMovement : MonoBehaviour
             // New Input System fallback (polled). Safe because it's compile-time guarded.
             move2D = ReadNewInputAxes();
 
-            // sprint/crouch via new input system
-            isSprinting = (Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed) && !isCrouching && move2D.sqrMagnitude > 0.01f;
+            // sprint/crouch via new input system (fixed mapping for common keys)
+            if (Keyboard.current != null)
+            {
+                // Sprint: leftShift held and not crouching and has movement
+                isSprinting = Keyboard.current.leftShiftKey.isPressed && !isCrouching && move2D.sqrMagnitude > 0.01f;
 
-            if (Keyboard.current != null && Keyboard.current.cKey.wasPressedThisFrame)
-                isCrouching = !isCrouching;
+                // Crouch: support hold or toggle using 'Q' key (matches default inspector crouchKey but new input system mapping is explicit)
+                if (crouchHold)
+                    isCrouching = Keyboard.current.qKey.isPressed;
+                else if (Keyboard.current.qKey.wasPressedThisFrame)
+                    isCrouching = !isCrouching;
+            }
+            else
+            {
+                isSprinting = false;
+                // cannot change crouch if keyboard not available
+            }
 #else
             // No input backend available at runtime; keep defaults and avoid any calls that throw.
             move2D = Vector2.zero;
             isSprinting = false;
-            // Crouch cannot be toggled without an input backend.
+            // Crouch cannot be changed without an input backend.
 #endif
         }
 
