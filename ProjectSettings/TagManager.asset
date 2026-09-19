@@ -7,6 +7,7 @@ TagManager:
   - charecter
   - flower
   - Camera
+  - Lighter
   layers:
   - Default
   - TransparentFX
