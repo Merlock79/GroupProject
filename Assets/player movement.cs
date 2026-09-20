@@ -1,7 +1,6 @@
-
 using UnityEngine;
 
-public class MovementController : MonoBehaviour
+public class MovementControllerOld : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float walkSpeed = 4f;
@@ -19,29 +18,27 @@ public class MovementController : MonoBehaviour
     private CharacterController controller;
     private Vector3 velocity;
     private float currentSpeed;
-    private bool isCrouching = false;
+    private bool isCrouching;
 
-    void Start()
+    private void Start()
     {
         controller = GetComponent<CharacterController>();
         currentSpeed = walkSpeed;
     }
 
-    void Update()
+    private void Update()
     {
         HandleMovement();
         HandleCrouch();
         ApplyGravity();
     }
 
-    void HandleMovement()
+    private void HandleMovement()
     {
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
-
         Vector3 move = transform.right * x + transform.forward * z;
 
-        // Sprint
         if (Input.GetKey(KeyCode.LeftShift) && !isCrouching)
             currentSpeed = sprintSpeed;
         else if (isCrouching)
@@ -52,19 +49,18 @@ public class MovementController : MonoBehaviour
         controller.Move(move * currentSpeed * Time.deltaTime);
     }
 
-    void HandleCrouch()
+    private void HandleCrouch()
     {
         if (Input.GetKeyDown(KeyCode.Q))
             isCrouching = !isCrouching;
 
         float targetHeight = isCrouching ? crouchHeight : normalHeight;
-
         controller.height = Mathf.Lerp(controller.height, targetHeight, Time.deltaTime * heightSmooth);
     }
 
-    void ApplyGravity()
+    private void ApplyGravity()
     {
-        if (controller.isGrounded && velocity.y < 0)
+        if (controller.isGrounded && velocity.y < 0f)
             velocity.y = -2f;
 
         velocity.y += gravity * Time.deltaTime;

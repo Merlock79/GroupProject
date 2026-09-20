@@ -1,18 +1,22 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class MouseLook : MonoBehaviour
+public class MouseLookOld : MonoBehaviour
 {
+    [FormerlySerializedAs("mouseSensitivity")]
     public float sensitivity = 150f;
+
+    [FormerlySerializedAs("player")]
     public Transform playerBody;
 
-    float xRotation = 0f;
+    private float xRotation;
 
-    void Start()
+    private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    void Update()
+    private void Update()
     {
         float mouseX = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
