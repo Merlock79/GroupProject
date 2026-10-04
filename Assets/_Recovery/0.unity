@@ -1980,7 +1980,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 9452ae1262a74094f8a68013fbcd1834, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -7426,8 +7426,14 @@ MonoBehaviour:
   pointB: {fileID: 1923696251}
   pointC: {fileID: 574160276}
   pointD: {fileID: 1086770237}
+  createVisibleWalls: 1
+  wallMaterial: {fileID: 0}
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
   wallHeight: 10
   wallThickness: 0.2
+  onlyBlockTag: 0
   blockTag: Player
 --- !u!4 &492212053
 Transform:
@@ -15307,7 +15313,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 9452ae1262a74094f8a68013fbcd1834, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -22340,12 +22346,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af5ae276dc2059e44a2ce6cab9145841, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScreenDarkening
-  player: {fileID: 583081457}
-  maxDarkness: 0.7
-  fadeDistance: 10
-  smoothSpeed: 5
-  lightSources: []
-  lightRemoveDistance: 5
+  zoneDarkness: 0.8
+  zoneVision: 3
 --- !u!114 &1344248010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22361,10 +22363,10 @@ MonoBehaviour:
   walkSpeed: 3
   sprintSpeed: 6
   crouchSpeed: 1.5
-  isSprinting: 0
-  isCrouching: 0
-  anim: {fileID: 0}
-  cameraController: {fileID: 2028420372}
+  normalHeight: 2
+  crouchHeight: 1
+  heightSmooth: 8
+  gravity: -9.81
 --- !u!1001 &1344978830
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35987,27 +35989,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24f2f0d293348b94894131472463ca22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdvancedCameraController
-  player: {fileID: 583081457}
-  mouseSensitivity: 150
-  minY: -40
-  maxY: 70
-  normalDistance: 4
-  zoomDistance: 2
-  fpsDistance: 0.1
-  shoulderOffset: 1.2
-  collisionOffset: 0.2
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 1
-  positionSmooth: 10
-  rotationSmooth: 12
-  cam: {fileID: 2028420371}
-  normalFOV: 70
-  sprintFOV: 85
-  fovSmooth: 8
-  sprintKey: 304
-  shakeStrength: 0.2
-  shakeDuration: 0.15
+  sensitivity: 150
+  playerBody: {fileID: 583081457}
 --- !u!114 &2028420373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36020,13 +36003,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af5ae276dc2059e44a2ce6cab9145841, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScreenDarkening
-  player: {fileID: 583081457}
-  maxDarkness: 0.7
-  fadeDistance: 10
-  smoothSpeed: 5
-  lightSources:
-  - {fileID: 0}
-  lightRemoveDistance: 5
+  zoneDarkness: 0.8
+  zoneVision: 3
 --- !u!1001 &2032225659
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -37268,7 +37246,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 9452ae1262a74094f8a68013fbcd1834, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
