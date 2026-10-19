@@ -157,11 +157,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CubeMovement
   speed: 4.5
-  jumpVelocity: 6.8
+  jumpVelocity: 10
+  riseGravityMultiplier: 2
+  fallGravityMultiplier: 3.5
   groundMask:
     serializedVersion: 2
     m_Bits: 8
-  checkDepth: 0.06
+  checkDepth: 0.045
   checkWidth: 0.45
 --- !u!114 &6697152095040950953
 MonoBehaviour:

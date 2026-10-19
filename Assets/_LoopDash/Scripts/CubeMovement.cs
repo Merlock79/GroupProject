@@ -8,6 +8,8 @@ public class CubeMovement : MonoBehaviour
 
     [Header("Стрибок")]
     [SerializeField] private float jumpVelocity = 6.8f;
+    [SerializeField, Min(1f)] private float riseGravityMultiplier = 1f;
+    [SerializeField, Min(1f)] private float fallGravityMultiplier = 1f;
     [SerializeField] private LayerMask groundMask;
 
     [Header("Перевірка землі")]
@@ -46,6 +48,12 @@ public class CubeMovement : MonoBehaviour
             v.y = jumpVelocity;
         }
         jumpRequested = false;
+
+        if (!IsGrounded())
+        {
+            float gravityMultiplier = v.y > 0f ? riseGravityMultiplier : fallGravityMultiplier;
+            v.y += Physics.gravity.y * (gravityMultiplier - 1f) * Time.fixedDeltaTime;
+        }
 
         rb.linearVelocity = v;
     }
