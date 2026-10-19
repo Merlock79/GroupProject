@@ -4,10 +4,11 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - charecter
-  - flower
   - Camera
   - Lighter
+  - Hazard
+  - Environment
+  - character
   layers:
   - Default
   - TransparentFX
@@ -15,7 +16,7 @@ TagManager:
   - Ground
   - Water
   - UI
-  - Hazard
+  - 
   - 
   - RCCP_Vehicle
   - RCCP_WheelCollider
