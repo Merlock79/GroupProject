@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 6697152095040950953}
   - component: {fileID: 6438564407030597666}
   - component: {fileID: 5489862361946149645}
+  - component: {fileID: 6598199835219366244}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -203,3 +204,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea9cfab0c198fbb46bb3e6a0bfce2b6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HazardDetector
+--- !u!114 &6598199835219366244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7289374086260761837}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d88bb89ec7ef2ea44a555c537c263d0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CubeExplosion
+  radius: 4
+  affectedLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  cooldown: 1.5
+  effectPrefab: {fileID: 2433282508537954060, guid: 3ef3ae421f71c5c4e97fe12dc2fc6312, type: 3}
