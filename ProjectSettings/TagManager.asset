@@ -9,6 +9,8 @@ TagManager:
   - Hazard
   - Environment
   - character
+  - FxTemporaire
+  - Destructible
   layers:
   - Default
   - TransparentFX
