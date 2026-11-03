@@ -222,3 +222,9 @@ MonoBehaviour:
     m_Bits: 4294967295
   cooldown: 1.5
   effectPrefab: {fileID: 2433282508537954060, guid: 3ef3ae421f71c5c4e97fe12dc2fc6312, type: 3}
+  effectLifetime: 2
+  scaleEffectToRadius: 0
+  effectBaseRadius: 2
+  flashDuration: 0.3
+  flashColor: {r: 0.98742133, g: 0.8928375, b: 0.24530262, a: 1}
+  flashOrangeColor: {r: 0.8301887, g: 0.25037912, b: 0.14358597, a: 1}

@@ -1,6 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(MeshRenderer))]
 public class CubeExplosion : MonoBehaviour
 {
     public const string DestructibleTag = "Destructible";
@@ -18,11 +20,41 @@ public class CubeExplosion : MonoBehaviour
     [SerializeField] private bool scaleEffectToRadius = false;
     [SerializeField, Min(0.01f)] private float effectBaseRadius = 2f;
 
+    [Header("Material Flash")]
+    [SerializeField, Min(0.01f)] private float flashDuration = 0.4f;
+    [SerializeField] private Color flashColor = new Color(1f, 0.95f, 0.6f);
+    [SerializeField] private Color flashOrangeColor = new Color(1f, 0.35f, 0.05f);
+
+    private Material cubeMaterial;
+    private Color initialColor;
+    private Coroutine flashCoroutine;
     private float nextAllowedTime;
 
     public float Radius => radius;
     public float CooldownRemaining => Mathf.Max(0f, nextAllowedTime - Time.time);
     public bool IsReady => Time.time >= nextAllowedTime;
+
+    private void Awake()
+    {
+        cubeMaterial = GetComponent<MeshRenderer>().material;
+        initialColor = cubeMaterial.color;
+    }
+
+    private void OnDisable()
+    {
+        if (flashCoroutine != null)
+        {
+            StopCoroutine(flashCoroutine);
+            flashCoroutine = null;
+        }
+
+        cubeMaterial.color = initialColor;
+    }
+
+    private void OnDestroy()
+    {
+        Destroy(cubeMaterial);
+    }
 
     public bool Explode()
     {
@@ -55,7 +87,34 @@ public class CubeExplosion : MonoBehaviour
         }
 
         SpawnEffect();
+        if (flashCoroutine != null)
+            StopCoroutine(flashCoroutine);
+        flashCoroutine = StartCoroutine(PlayMaterialFlash());
         return true;
+    }
+
+    private IEnumerator PlayMaterialFlash()
+    {
+        Color startColor = flashColor;
+        Color orangeColor = flashOrangeColor;
+        startColor.a = initialColor.a;
+        orangeColor.a = initialColor.a;
+
+        float elapsedTime = 0f;
+        while (elapsedTime < flashDuration)
+        {
+            float progress = elapsedTime / flashDuration;
+            cubeMaterial.color = progress < 0.25f
+                ? Color.Lerp(startColor, orangeColor, progress / 0.25f)
+                : Color.Lerp(orangeColor, initialColor,
+                    Mathf.SmoothStep(0f, 1f, (progress - 0.25f) / 0.75f));
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        cubeMaterial.color = initialColor;
+        flashCoroutine = null;
     }
 
     private void SpawnEffect()
