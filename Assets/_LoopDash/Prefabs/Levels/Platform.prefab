@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8993804058834920320}
   - component: {fileID: 8171333957913465280}
   - component: {fileID: 1252603516146752397}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Platform
   m_TagString: Environment
   m_Icon: {fileID: 0}
@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4, y: 1, z: 4}
+  m_LocalScale: {x: 100, y: 1, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
