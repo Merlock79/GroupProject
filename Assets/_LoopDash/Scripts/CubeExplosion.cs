@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(MeshRenderer))]
 public class CubeExplosion : MonoBehaviour
 {
     public const string DestructibleTag = "Destructible";
@@ -21,6 +20,7 @@ public class CubeExplosion : MonoBehaviour
     [SerializeField, Min(0.01f)] private float effectBaseRadius = 2f;
 
     [Header("Material Flash")]
+    [SerializeField] private MeshRenderer cubeRenderer;
     [SerializeField, Min(0.01f)] private float flashDuration = 0.4f;
     [SerializeField] private Color flashColor = new Color(1f, 0.95f, 0.6f);
     [SerializeField] private Color flashOrangeColor = new Color(1f, 0.35f, 0.05f);
@@ -36,7 +36,8 @@ public class CubeExplosion : MonoBehaviour
 
     private void Awake()
     {
-        cubeMaterial = GetComponent<MeshRenderer>().material;
+        if (cubeRenderer == null) cubeRenderer = GetComponent<MeshRenderer>();
+        cubeMaterial = cubeRenderer.material;
         initialColor = cubeMaterial.color;
     }
 

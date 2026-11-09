@@ -17,12 +17,15 @@ public class CubeInput : MonoBehaviour
         explosion = GetComponent<CubeExplosion>();
 
         jumpAction = new InputAction("Jump", InputActionType.Button, "<Keyboard>/space");
+        jumpAction.AddBinding("<Mouse>/leftButton");
+        jumpAction.wantsInitialStateCheck = true;
         explodeAction = new InputAction("Explode", InputActionType.Button, "<Mouse>/rightButton");
     }
 
     private void OnEnable()
     {
-        jumpAction.performed += OnJump;
+        jumpAction.performed += OnJumpPressed;
+        jumpAction.canceled += OnJumpReleased;
         explodeAction.performed += OnExplode;
         jumpAction.Enable();
         explodeAction.Enable();
@@ -30,13 +33,17 @@ public class CubeInput : MonoBehaviour
 
     private void OnDisable()
     {
-        jumpAction.performed -= OnJump;
+        jumpAction.performed -= OnJumpPressed;
+        jumpAction.canceled -= OnJumpReleased;
         explodeAction.performed -= OnExplode;
+        movement.SetJumpHeld(false);
         jumpAction.Disable();
         explodeAction.Disable();
     }
 
-    private void OnJump(InputAction.CallbackContext ctx) => movement.Jump();
+    private void OnJumpPressed(InputAction.CallbackContext ctx) => movement.SetJumpHeld(true);
+
+    private void OnJumpReleased(InputAction.CallbackContext ctx) => movement.SetJumpHeld(false);
 
     private void OnExplode(InputAction.CallbackContext ctx) => explosion.Explode();
 }

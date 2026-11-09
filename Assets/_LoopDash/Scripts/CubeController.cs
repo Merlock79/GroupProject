@@ -1,18 +1,15 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CubeMovement), typeof(HazardDetector))]
 public class CubeController : MonoBehaviour
 {
     [SerializeField] private CubeMovement movement;
     [SerializeField] private HazardDetector hazardDetector;
 
-    private Rigidbody rb;
-
     public bool IsDead { get; private set; }
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
         if (movement == null) movement = GetComponent<CubeMovement>();
         if (hazardDetector == null) hazardDetector = GetComponent<HazardDetector>();
     }
@@ -33,10 +30,6 @@ public class CubeController : MonoBehaviour
         IsDead = true;
 
         movement.enabled = false;
-
-        rb.linearVelocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
-        rb.isKinematic = true;
 
         Debug.Log($"Гравець загинув: зіткнення з {hazard.name}", hazard);
     }

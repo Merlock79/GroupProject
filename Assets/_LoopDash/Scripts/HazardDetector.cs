@@ -9,15 +9,15 @@ public class HazardDetector : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Check(collision.collider);
+        ReportContact(collision.collider);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        Check(other);
+        ReportContact(other);
     }
 
-    private void Check(Collider other)
+    internal void ReportContact(Collider other)
     {
         if (other.CompareTag(HazardTag))
         {
