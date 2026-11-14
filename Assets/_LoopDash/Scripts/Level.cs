@@ -1,9 +1,11 @@
 using System.Collections;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Level : MonoBehaviour
 {
+    public static event Action<Level> LevelCompleted;
     [Header("Посилання")]
     [SerializeField] private Transform player;
     [SerializeField] private Transform finishPoint;
@@ -24,11 +26,13 @@ public class Level : MonoBehaviour
     private int lastLoggedPercent = -1;
 
     public float Progress { get; private set; }
+    public int Attempts => deathCount + 1;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetStatics()
     {
         deathCount = 0;
+        LevelCompleted = null;
     }
 
     private void OnEnable()
@@ -69,7 +73,7 @@ public class Level : MonoBehaviour
 
     private void HandleHazard(GameObject hazard)
     {
-        if (deathHandled) return;
+        if (deathHandled || finished) return;
         deathHandled = true;
 
         deathCount++;
@@ -81,6 +85,17 @@ public class Level : MonoBehaviour
     private IEnumerator RestartAfterDelay()
     {
         yield return new WaitForSeconds(restartDelay);
+        ReloadCurrentScene();
+    }
+
+    public void RestartLevel()
+    {
+        deathCount = 0;
+        ReloadCurrentScene();
+    }
+
+    private static void ReloadCurrentScene()
+    {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -94,6 +109,7 @@ public class Level : MonoBehaviour
         {
             finished = true;
             Debug.Log("Перемога! Рівень пройдено.");
+            LevelCompleted?.Invoke(this);
         }
     }
 
