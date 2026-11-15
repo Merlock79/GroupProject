@@ -25,13 +25,9 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene(testLevelSceneName);
     }
 
-    /// <summary>Закриває застосунок (у редакторі зупиняє Play Mode).</summary>
+    /// <summary>Закриває застосунок.</summary>
     public void Exit()
     {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
         Application.Quit();
-#endif
     }
 }
