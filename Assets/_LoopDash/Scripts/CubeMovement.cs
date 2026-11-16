@@ -18,6 +18,7 @@ public class CubeMovement : MonoBehaviour
     [SerializeField, Min(0f)] private float coyoteTime = 0.06f;
     [SerializeField, Min(0f), Tooltip("Seconds to keep a jump press before landing.")]
     private float jumpBufferTime = 0.1f;
+    [SerializeField] private ParticleSystem extraJumpAura;
 
     private Rigidbody body;
     private HazardDetector hazardDetector;
@@ -25,6 +26,8 @@ public class CubeMovement : MonoBehaviour
     private Collider hazardHit;
     private float verticalSpeed;
     private float landingHeight;
+    private float currentJumpHeight;
+    private float pendingLaunchHeight;
     private double leftGroundAt = double.NegativeInfinity;
     private double jumpPressedAt = double.NegativeInfinity;
     private bool grounded;
@@ -32,8 +35,12 @@ public class CubeMovement : MonoBehaviour
     private bool jumpRequested;
     private bool jumpHeld;
 
+    public bool HasExtraJump { get; private set; }
     public bool IsAirborne => !grounded ||
         (landedThisStep && transform.position.y > landingHeight + CubeCollision.ContactTolerance);
+
+    public float CurrentJumpHeight => currentJumpHeight;
+    public float HorizontalSpeed => speed;
 
     private void Awake()
     {
@@ -42,6 +49,7 @@ public class CubeMovement : MonoBehaviour
         body.isKinematic = true;
         body.useGravity = false;
         hazardDetector = GetComponent<HazardDetector>();
+        currentJumpHeight = jumpHeight;
     }
 
     private void Start()
@@ -51,10 +59,46 @@ public class CubeMovement : MonoBehaviour
         grounded = collision.TryGetFloor(body.position, CubeCollision.ContactTolerance, out _);
     }
 
+    private void OnDisable()
+    {
+        pendingLaunchHeight = 0f;
+        ClearExtraJump();
+    }
+
     public void Jump()
     {
         jumpRequested = true;
         jumpPressedAt = Time.timeAsDouble;
+    }
+
+    public bool TryAddExtraJump()
+    {
+        if (!isActiveAndEnabled || HasExtraJump) return false;
+
+        HasExtraJump = true;
+        SetExtraJumpAura(true);
+        return true;
+    }
+
+    public void ClearExtraJump()
+    {
+        HasExtraJump = false;
+        SetExtraJumpAura(false);
+    }
+
+    /// <summary>
+    /// Queues a normal-height launch for the next physics step.
+    /// </summary>
+    public void ApplyJump() => ApplyJump(jumpHeight);
+
+    /// <summary>
+    /// Queues a launch with the requested height, even when the cube is already airborne.
+    /// </summary>
+    public void ApplyJump(float height)
+    {
+        if (!isActiveAndEnabled || float.IsNaN(height) || float.IsInfinity(height) || height <= 0f) return;
+
+        pendingLaunchHeight = height;
     }
 
     public void SetJumpHeld(bool held)
@@ -65,6 +109,24 @@ public class CubeMovement : MonoBehaviour
         }
 
         jumpHeld = held;
+    }
+
+    private void SetExtraJumpAura(bool visible)
+    {
+        if (extraJumpAura == null) return;
+
+        if (visible)
+        {
+            extraJumpAura.gameObject.SetActive(true);
+            extraJumpAura.Play(true);
+        }
+        else
+        {
+            if (extraJumpAura.gameObject.activeInHierarchy)
+                extraJumpAura.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+            extraJumpAura.gameObject.SetActive(false);
+        }
     }
 
     public bool IsGrounded() => grounded;
@@ -84,11 +146,22 @@ public class CubeMovement : MonoBehaviour
         bool withinCoyoteTime = coyoteTime > 0f && now - leftGroundAt <= coyoteTime;
         bool withinJumpBuffer = jumpBufferTime > 0f && now - jumpPressedAt <= jumpBufferTime;
         bool hasJumpPress = jumpRequested || withinJumpBuffer;
-        bool jumpStarted = (grounded && jumpHeld) || (hasJumpPress && (grounded || withinCoyoteTime));
+        bool canGroundJump = wasGrounded || withinCoyoteTime;
+        bool groundJumpRequested = (wasGrounded && jumpHeld) || (hasJumpPress && canGroundJump);
+        bool useExtraJump = pendingLaunchHeight == 0f && jumpRequested && HasExtraJump && !canGroundJump;
+        bool jumpStarted = pendingLaunchHeight > 0f || groundJumpRequested || useExtraJump;
+
+        if (useExtraJump)
+        {
+            ClearExtraJump();
+        }
+
         jumpRequested = false;
         if (jumpStarted)
         {
-            verticalSpeed = 2f * jumpHeight / timeToApex;
+            currentJumpHeight = pendingLaunchHeight > 0f ? pendingLaunchHeight : jumpHeight;
+            pendingLaunchHeight = 0f;
+            verticalSpeed = 2f * currentJumpHeight / timeToApex;
             leftGroundAt = double.NegativeInfinity;
             jumpPressedAt = double.NegativeInfinity;
         }
@@ -122,27 +195,34 @@ public class CubeMovement : MonoBehaviour
 
     private void Advance(ref Vector3 position, float duration, bool canStep)
     {
-        if (verticalSpeed > 0f)
+        float horizontalDisplacement = speed * duration;
+        float fallDuration = duration;
+        bool startedRising = verticalSpeed > 0f;
+
+        if (startedRising)
         {
-            float riseGravity = 2f * jumpHeight / (timeToApex * timeToApex);
+            float riseGravity = 2f * currentJumpHeight / (timeToApex * timeToApex);
             float riseDuration = Mathf.Min(duration, verticalSpeed / riseGravity);
             float riseDistance = (verticalSpeed - 0.5f * riseGravity * riseDuration) * riseDuration;
             verticalSpeed = Mathf.Max(0f, verticalSpeed - riseGravity * riseDuration);
 
             MoveVertically(ref position, riseDistance);
-            MoveHorizontally(ref position, speed * riseDuration, false);
-            duration -= riseDuration;
+            fallDuration -= riseDuration;
         }
 
-        if (duration <= 0f || hazardHit != null) return;
+        if ((fallDuration <= 0f && !startedRising) || hazardHit != null) return;
 
-        float fallGravity = 2f * jumpHeight / (timeFromApex * timeFromApex);
-        float fallDistance = (verticalSpeed - 0.5f * fallGravity * duration) * duration;
-        verticalSpeed -= fallGravity * duration;
+        float fallDistance = 0f;
+        if (fallDuration > 0f)
+        {
+            float fallGravity = 2f * currentJumpHeight / (timeFromApex * timeFromApex);
+            fallDistance = (verticalSpeed - 0.5f * fallGravity * fallDuration) * fallDuration;
+            verticalSpeed -= fallGravity * fallDuration;
+        }
 
-        // Move over the leading edge before resolving the descent onto it.
-        MoveHorizontally(ref position, speed * duration, canStep);
-        MoveVertically(ref position, fallDistance);
+        // Keep horizontal travel fixed for the whole physics step, including across the apex.
+        MoveHorizontally(ref position, horizontalDisplacement, canStep && !startedRising);
+        if (fallDuration > 0f) MoveVertically(ref position, fallDistance);
     }
 
     private void MoveHorizontally(ref Vector3 position, float displacement, bool canStep)
