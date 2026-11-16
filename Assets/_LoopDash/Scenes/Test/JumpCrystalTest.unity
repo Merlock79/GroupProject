@@ -119,25 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &900005 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7289374086260761837, guid: 98b31928bc6504d4bb95abcf60192416, type: 3}
-  m_PrefabInstance: {fileID: 1150000002}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &900006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 900005}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd1be666d0c2431eb130a2503b5d61bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::JumpCrystalTestVerifier
-  movement: {fileID: 0}
-  crystalPrefab: {fileID: 100100000, guid: 9ed637da1f004e7eb725022ca40ffd4f, type: 3}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,7 +205,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.1322, y: 0, z: 0, w: 0.9912}
+  m_LocalRotation: {x: 0.13220303, y: 0, z: 0, w: 0.99122268}
   m_LocalPosition: {x: 9, y: 10, z: -35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -467,16 +448,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Test Player
       objectReference: {fileID: 0}
-    - target: {fileID: 6697152095040950953, guid: 98b31928bc6504d4bb95abcf60192416, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}    m_RemovedComponents: []
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7289374086260761837, guid: 98b31928bc6504d4bb95abcf60192416, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 900006}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 98b31928bc6504d4bb95abcf60192416, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

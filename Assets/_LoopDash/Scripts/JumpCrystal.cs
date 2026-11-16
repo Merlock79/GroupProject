@@ -1,9 +1,11 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
 public class JumpCrystal : MonoBehaviour
 {
     [SerializeField] private string playerTag = "Player";
+    [SerializeField] private PickupAnimation pickupAnimation;
 
     private Collider pickupCollider;
     private bool collected;
@@ -24,6 +26,12 @@ public class JumpCrystal : MonoBehaviour
         collected = true;
         pickupCollider.enabled = false;
         movement.TryAddExtraJump();
+        StartCoroutine(FinishCollection());
+    }
+
+    private IEnumerator FinishCollection()
+    {
+        yield return pickupAnimation.PlayCollectionAnimation();
         Destroy(gameObject);
     }
 }

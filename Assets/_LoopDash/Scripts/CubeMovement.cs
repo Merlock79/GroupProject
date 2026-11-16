@@ -27,6 +27,7 @@ public class CubeMovement : MonoBehaviour
     private float verticalSpeed;
     private float landingHeight;
     private float currentJumpHeight;
+    private float pendingLaunchHeight;
     private double leftGroundAt = double.NegativeInfinity;
     private double jumpPressedAt = double.NegativeInfinity;
     private bool grounded;
@@ -60,20 +61,12 @@ public class CubeMovement : MonoBehaviour
 
     private void OnDisable()
     {
+        pendingLaunchHeight = 0f;
         ClearExtraJump();
     }
 
     public void Jump()
     {
-        bool withinCoyoteTime = coyoteTime > 0f && Time.timeAsDouble - leftGroundAt <= coyoteTime;
-        if (HasExtraJump && !grounded && !withinCoyoteTime && IsAirborne)
-        {
-            HasExtraJump = false;
-            SetExtraJumpAura(false);
-            ApplyJump();
-            return;
-        }
-
         jumpRequested = true;
         jumpPressedAt = Time.timeAsDouble;
     }
@@ -94,24 +87,18 @@ public class CubeMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// Starts a normal-height jump, including when the cube is already airborne.
+    /// Queues a normal-height launch for the next physics step.
     /// </summary>
     public void ApplyJump() => ApplyJump(jumpHeight);
 
     /// <summary>
-    /// Starts a jump with the requested height, even when the cube is already airborne.
+    /// Queues a launch with the requested height, even when the cube is already airborne.
     /// </summary>
     public void ApplyJump(float height)
     {
-        if (float.IsNaN(height) || float.IsInfinity(height) || height <= 0f) return;
+        if (!isActiveAndEnabled || float.IsNaN(height) || float.IsInfinity(height) || height <= 0f) return;
 
-        currentJumpHeight = height;
-        verticalSpeed = 2f * currentJumpHeight / timeToApex;
-        grounded = false;
-        landedThisStep = false;
-        leftGroundAt = double.NegativeInfinity;
-        jumpPressedAt = double.NegativeInfinity;
-        jumpRequested = false;
+        pendingLaunchHeight = height;
     }
 
     public void SetJumpHeld(bool held)
@@ -159,11 +146,21 @@ public class CubeMovement : MonoBehaviour
         bool withinCoyoteTime = coyoteTime > 0f && now - leftGroundAt <= coyoteTime;
         bool withinJumpBuffer = jumpBufferTime > 0f && now - jumpPressedAt <= jumpBufferTime;
         bool hasJumpPress = jumpRequested || withinJumpBuffer;
-        bool jumpStarted = (grounded && jumpHeld) || (hasJumpPress && (grounded || withinCoyoteTime));
+        bool canGroundJump = wasGrounded || withinCoyoteTime;
+        bool groundJumpRequested = (wasGrounded && jumpHeld) || (hasJumpPress && canGroundJump);
+        bool useExtraJump = pendingLaunchHeight == 0f && jumpRequested && HasExtraJump && !canGroundJump;
+        bool jumpStarted = pendingLaunchHeight > 0f || groundJumpRequested || useExtraJump;
+
+        if (useExtraJump)
+        {
+            ClearExtraJump();
+        }
+
         jumpRequested = false;
         if (jumpStarted)
         {
-            currentJumpHeight = jumpHeight;
+            currentJumpHeight = pendingLaunchHeight > 0f ? pendingLaunchHeight : jumpHeight;
+            pendingLaunchHeight = 0f;
             verticalSpeed = 2f * currentJumpHeight / timeToApex;
             leftGroundAt = double.NegativeInfinity;
             jumpPressedAt = double.NegativeInfinity;

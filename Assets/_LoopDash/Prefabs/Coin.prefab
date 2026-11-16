@@ -69,7 +69,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Coin
   value: 1
   playerTag: Player
-  coinAnimation: {fileID: 7985041098051953210}
+  pickupAnimation: {fileID: 7985041098051953210}
 --- !u!1 &8201479532406253101
 GameObject:
   m_ObjectHideFlags: 0
@@ -5041,7 +5041,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d6152a5b6c4d4952ab0ad9eab430fc36, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CoinAnimation
+  m_EditorClassIdentifier: Assembly-CSharp::PickupAnimation
   rotationSpeed: 180
   rotationOffsetPerUnit: -15
   levitationHeight: 0.08

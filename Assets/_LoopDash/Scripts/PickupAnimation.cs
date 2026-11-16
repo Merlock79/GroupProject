@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class CoinAnimation : MonoBehaviour
+public class PickupAnimation : MonoBehaviour
 {
     [SerializeField] private float rotationSpeed = 120f;
     [SerializeField] private float rotationOffsetPerUnit = 30f;

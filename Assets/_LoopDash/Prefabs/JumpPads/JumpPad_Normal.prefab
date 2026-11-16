@@ -10,15 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100000, guid: 3dbe5e81a82041baa2be774704803420, type: 3}
       propertyPath: m_Name
-      value: JumpPad_Weak
-      objectReference: {fileID: 0}
-    - target: {fileID: 230002, guid: 3dbe5e81a82041baa2be774704803420, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 79eb9295c7e742c28a2ac4bf34b97ca1, type: 2}
-    - target: {fileID: 11400000, guid: 3dbe5e81a82041baa2be774704803420, type: 3}
-      propertyPath: jumpHeight
-      value: 4.5
+      value: JumpPad_Normal
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

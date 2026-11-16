@@ -1,12 +1,14 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Collider))]
 public class Coin : MonoBehaviour
 {
     [SerializeField, Min(1)] private int value = 1;
     [SerializeField] private string playerTag = "Player";
-    [SerializeField] private CoinAnimation coinAnimation;
+    [FormerlySerializedAs("coinAnimation")]
+    [SerializeField] private PickupAnimation pickupAnimation;
 
     private bool collected;
 
@@ -30,7 +32,7 @@ public class Coin : MonoBehaviour
 
     private IEnumerator FinishCollection()
     {
-        yield return coinAnimation.PlayCollectionAnimation();
+        yield return pickupAnimation.PlayCollectionAnimation();
         Destroy(gameObject);
     }
 }
