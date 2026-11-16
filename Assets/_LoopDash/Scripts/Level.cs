@@ -96,7 +96,26 @@ public class Level : MonoBehaviour
 
     private static void ReloadCurrentScene()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        var activeScene = SceneManager.GetActiveScene();
+        if (activeScene.buildIndex >= 0)
+        {
+            SceneManager.LoadScene(activeScene.buildIndex);
+            return;
+        }
+
+#if UNITY_EDITOR
+        // Test scenes are often opened directly in the editor and are not included
+        // in Build Settings, so their buildIndex is -1. Reload them by asset path.
+        if (!string.IsNullOrEmpty(activeScene.path))
+        {
+            UnityEditor.SceneManagement.EditorSceneManager.LoadSceneInPlayMode(
+                activeScene.path,
+                new LoadSceneParameters(LoadSceneMode.Single));
+            return;
+        }
+#endif
+
+        Debug.LogError($"Cannot reload scene '{activeScene.name}': it is not included in Build Settings.");
     }
 
     private void Update()

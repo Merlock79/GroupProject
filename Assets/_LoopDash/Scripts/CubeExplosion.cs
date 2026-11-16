@@ -33,6 +33,9 @@ public class CubeExplosion : MonoBehaviour
     public float Radius => radius;
     public float CooldownRemaining => Mathf.Max(0f, nextAllowedTime - Time.time);
     public bool IsReady => Time.time >= nextAllowedTime;
+    public float CooldownProgress => cooldown <= 0f || IsReady
+        ? 1f
+        : Mathf.Clamp01(1f - CooldownRemaining / cooldown);
 
     private void Awake()
     {
