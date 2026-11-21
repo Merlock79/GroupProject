@@ -13,21 +13,35 @@ public class CameraLocker : MonoBehaviour
         cam = GetComponent<CinemachineCamera>();
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        TryBind();
+        if (PlayerModeManager.Instance != null)
+        {
+            PlayerModeManager.Instance.OnPlayerChanged -= Bind;
+            PlayerModeManager.Instance.OnPlayerChanged += Bind;
+        }
     }
 
-    private void Update()
+    private void Start()
     {
-        if (cam.Target.TrackingTarget == null)
+        if (PlayerModeManager.Instance != null)
         {
-            TryBind();
+            PlayerModeManager.Instance.OnPlayerChanged -= Bind;
+            PlayerModeManager.Instance.OnPlayerChanged += Bind;
+            Bind(PlayerModeManager.Instance.CurrentPlayer);
         }
-        else
-        {
-            enabled = false;
-        }
+        else TryBind();
+    }
+
+    private void OnDisable()
+    {
+        if (PlayerModeManager.Instance != null)
+            PlayerModeManager.Instance.OnPlayerChanged -= Bind;
+    }
+
+    private void Bind(GameObject player)
+    {
+        if (player != null) cam.Target.TrackingTarget = player.transform;
     }
 
     private void TryBind()

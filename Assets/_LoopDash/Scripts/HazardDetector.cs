@@ -21,7 +21,12 @@ public class HazardDetector : MonoBehaviour
     {
         if (other.CompareTag(HazardTag))
         {
-            OnHazardDetected?.Invoke(other.gameObject);
+            ReportFatalContact(other);
         }
+    }
+
+    public void ReportFatalContact(Collider other)
+    {
+        if (other != null) OnHazardDetected?.Invoke(other.gameObject);
     }
 }

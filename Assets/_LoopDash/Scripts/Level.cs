@@ -37,17 +37,46 @@ public class Level : MonoBehaviour
 
     private void OnEnable()
     {
-        if (player == null || finishPoint == null)
+        if (PlayerModeManager.Instance != null)
         {
-            Debug.LogError("Level: призначте Player і FinishPoint в Inspector", this);
-            enabled = false;
+            PlayerModeManager.Instance.OnPlayerChanged -= HandlePlayerChanged;
+            PlayerModeManager.Instance.OnPlayerChanged += HandlePlayerChanged;
+            if (PlayerModeManager.Instance.CurrentPlayer != null)
+                HandlePlayerChanged(PlayerModeManager.Instance.CurrentPlayer);
             return;
         }
 
-        hazardDetector = player.GetComponent<HazardDetector>();
-        if (hazardDetector == null)
+        InitializePlayer(player != null ? player.gameObject : null);
+    }
+
+    private void HandlePlayerChanged(GameObject newPlayer) => InitializePlayer(newPlayer);
+
+    private void InitializePlayer(GameObject newPlayer)
+    {
+        if (hazardDetector != null) hazardDetector.OnHazardDetected -= HandleHazard;
+        player = newPlayer != null ? newPlayer.transform : null;
+        hazardDetector = newPlayer != null ? newPlayer.GetComponent<HazardDetector>() : null;
+        if (player == null || hazardDetector == null)
         {
-            Debug.LogError("Level: на Player немає HazardDetector", this);
+            Debug.LogError("Level: active player or HazardDetector is missing", this);
+            return;
+        }
+        hazardDetector.OnHazardDetected += HandleHazard;
+    }
+
+    private void Start()
+    {
+        // Scene Awake ordering is unspecified, so bind again once every manager has awoken.
+        if (PlayerModeManager.Instance != null)
+        {
+            PlayerModeManager.Instance.OnPlayerChanged -= HandlePlayerChanged;
+            PlayerModeManager.Instance.OnPlayerChanged += HandlePlayerChanged;
+            HandlePlayerChanged(PlayerModeManager.Instance.CurrentPlayer);
+        }
+
+        if (player == null || finishPoint == null)
+        {
+            Debug.LogError("Level: призначте Player і FinishPoint в Inspector", this);
             enabled = false;
             return;
         }
@@ -62,11 +91,12 @@ public class Level : MonoBehaviour
 
         Progress = 0f;
         lastLoggedPercent = -1;
-        hazardDetector.OnHazardDetected += HandleHazard;
     }
 
     private void OnDisable()
     {
+        if (PlayerModeManager.Instance != null)
+            PlayerModeManager.Instance.OnPlayerChanged -= HandlePlayerChanged;
         if (hazardDetector != null)
             hazardDetector.OnHazardDetected -= HandleHazard;
     }
@@ -120,6 +150,7 @@ public class Level : MonoBehaviour
 
     private void Update()
     {
+        if (player == null || finishPoint == null) return;
         UpdateProgress();
 
         if (finished || deathHandled) return;

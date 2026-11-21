@@ -11,7 +11,24 @@ public class ExplosionCooldownUI : MonoBehaviour
 
     private void OnEnable()
     {
+        if (PlayerModeManager.Instance != null)
+        {
+            PlayerModeManager.Instance.OnPlayerChanged -= HandlePlayerChanged;
+            PlayerModeManager.Instance.OnPlayerChanged += HandlePlayerChanged;
+        }
         ResolveReferences();
+        Refresh();
+    }
+
+    private void OnDisable()
+    {
+        if (PlayerModeManager.Instance != null)
+            PlayerModeManager.Instance.OnPlayerChanged -= HandlePlayerChanged;
+    }
+
+    private void HandlePlayerChanged(GameObject player)
+    {
+        explosion = player != null ? player.GetComponent<CubeExplosion>() : null;
         Refresh();
     }
 
