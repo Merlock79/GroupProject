@@ -21,8 +21,8 @@ public class CoinCounter : MonoBehaviour
         CoinStorage.CoinsChanged -= UpdateCount;
     }
 
-    private void UpdateCount(int total)
+    private void UpdateCount(float total)
     {
-        label.text = total.ToString();
+        label.text = total.ToString("0.##");
     }
 }

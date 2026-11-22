@@ -70,6 +70,7 @@ MonoBehaviour:
   value: 1
   playerTag: Player
   pickupAnimation: {fileID: 7985041098051953210}
+  doubleCoinChanceUpgrade: {fileID: 11400000, guid: b406e53444624f4fa8ced7a4564a6efc, type: 2}
 --- !u!1 &8201479532406253101
 GameObject:
   m_ObjectHideFlags: 0

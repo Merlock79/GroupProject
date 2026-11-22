@@ -4849,6 +4849,31 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6627467946059793326, guid: 69306b36f60b84846ab1ea14c87206b6, type: 3}
   m_PrefabInstance: {fileID: 8382102339108308194}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6132695163032225301
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1480354638353965856, guid: 37a288c754a96eb4f97d5d31655b7e10, type: 3}
+      propertyPath: m_Name
+      value: StarterCoin
+      objectReference: {fileID: 0}
+    - target: {fileID: 7085836527333037088, guid: 37a288c754a96eb4f97d5d31655b7e10, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -47.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7085836527333037088, guid: 37a288c754a96eb4f97d5d31655b7e10, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 37a288c754a96eb4f97d5d31655b7e10, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -4862,3 +4887,4 @@ SceneRoots:
   - {fileID: 1869542699}
   - {fileID: 1505913205}
   - {fileID: 44860023}
+  - {fileID: 6132695163032225301}
