@@ -267,11 +267,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d88bb89ec7ef2ea44a555c537c263d0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CubeExplosion
+  unlockUpgrade: {fileID: 11400000, guid: e94c1aa0555a482390985430f3fb26b6, type: 2}
   radius: 4
   affectedLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  cooldown: 1.5
+  cooldownUpgrade: {fileID: 11400000, guid: 4c86969e295c4d22bae9705fcab2b503, type: 2}
   effectPrefab: {fileID: 2433282508537954060, guid: 3ef3ae421f71c5c4e97fe12dc2fc6312, type: 3}
   effectLifetime: 2
   scaleEffectToRadius: 0

@@ -7,11 +7,12 @@ public class CubeExplosion : MonoBehaviour
     public const string DestructibleTag = "Destructible";
 
     [Header("Вибух")]
+    [SerializeField] private UpgradeDefinition unlockUpgrade;
     [SerializeField, Min(0.1f)] private float radius = 4f;
     [SerializeField] private LayerMask affectedLayers = ~0;
 
     [Header("Кулдаун")]
-    [SerializeField, Min(0f)] private float cooldown = 1.5f;
+    [SerializeField] private UpgradeDefinition cooldownUpgrade;
 
     [Header("Ефект")]
     [SerializeField] private GameObject effectPrefab;
@@ -28,14 +29,23 @@ public class CubeExplosion : MonoBehaviour
     private Material cubeMaterial;
     private Color initialColor;
     private Coroutine flashCoroutine;
-    private float nextAllowedTime;
+    private float lastExplosionTime = float.NegativeInfinity;
 
     public float Radius => radius;
-    public float CooldownRemaining => Mathf.Max(0f, nextAllowedTime - Time.time);
-    public bool IsReady => Time.time >= nextAllowedTime;
-    public float CooldownProgress => cooldown <= 0f || IsReady
-        ? 1f
-        : Mathf.Clamp01(1f - CooldownRemaining / cooldown);
+    public bool IsUnlocked => ((ExplosionUnlockEffect)unlockUpgrade.Effect)
+        .IsUnlocked(ProgressionManager.Instance.GetLevel(unlockUpgrade));
+    public float Cooldown => ((ExplosionCooldownEffect)cooldownUpgrade.Effect)
+        .GetCooldown(ProgressionManager.Instance.GetActiveLevel(cooldownUpgrade));
+    public float CooldownRemaining => Mathf.Max(0f, lastExplosionTime + Cooldown - Time.time);
+    public bool IsReady => IsUnlocked && CooldownRemaining == 0f;
+    public float CooldownProgress
+    {
+        get
+        {
+            if (!IsUnlocked) return 0f;
+            return Mathf.Clamp01(1f - CooldownRemaining / Cooldown);
+        }
+    }
 
     private void Awake()
     {
@@ -63,7 +73,7 @@ public class CubeExplosion : MonoBehaviour
     public bool Explode()
     {
         if (!IsReady) return false;
-        nextAllowedTime = Time.time + cooldown;
+        lastExplosionTime = Time.time;
 
         Collider[] hits = Physics.OverlapSphere(
             transform.position, radius, affectedLayers, QueryTriggerInteraction.Ignore);

@@ -1,6 +1,7 @@
 using System.Collections;
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class Level : MonoBehaviour
@@ -19,6 +20,7 @@ public class Level : MonoBehaviour
     private static int deathCount;
 
     private HazardDetector hazardDetector;
+    private InputAction returnToMenuAction;
     private bool deathHandled;
     private bool finished;
 
@@ -35,8 +37,16 @@ public class Level : MonoBehaviour
         LevelCompleted = null;
     }
 
+    private void Awake()
+    {
+        returnToMenuAction = new InputAction("Return to Menu", InputActionType.Button, "<Keyboard>/escape");
+    }
+
     private void OnEnable()
     {
+        returnToMenuAction.performed += ReturnToMenu;
+        returnToMenuAction.Enable();
+
         if (PlayerModeManager.Instance != null)
         {
             PlayerModeManager.Instance.OnPlayerChanged -= HandlePlayerChanged;
@@ -97,8 +107,22 @@ public class Level : MonoBehaviour
     {
         if (PlayerModeManager.Instance != null)
             PlayerModeManager.Instance.OnPlayerChanged -= HandlePlayerChanged;
+        returnToMenuAction.Disable();
+        returnToMenuAction.performed -= ReturnToMenu;
         if (hazardDetector != null)
             hazardDetector.OnHazardDetected -= HandleHazard;
+    }
+
+    private void OnDestroy()
+    {
+        returnToMenuAction.Dispose();
+    }
+
+    private void ReturnToMenu(InputAction.CallbackContext context)
+    {
+        StopAllCoroutines();
+        deathCount = 0;
+        SceneManager.LoadScene("MainMenu");
     }
 
     private void HandleHazard(GameObject hazard)

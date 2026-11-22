@@ -3,35 +3,87 @@ using UnityEngine;
 
 public static class CoinStorage
 {
-    private const string Key = "TotalCoins";
+    private const string LegacyKey = "TotalCoins";
+    private const string BalanceKey = "TotalCoins.Float";
 
-    public static event Action<int> CoinsChanged;
+    public static event Action<float> CoinsChanged;
 
-    public static void AddCoins(int amount)
+    public static void AddCoins(float amount)
     {
-        if (amount <= 0)
+        if (!float.IsFinite(amount) || amount <= 0f)
         {
-            Debug.LogWarning($"CoinStorage: пропущено недопустимое значение {amount}");
+            Debug.LogWarning($"CoinStorage ignored invalid coin amount {amount}.");
             return;
         }
 
-        long total = (long)GetCoins() + amount;
-        if (total > int.MaxValue) total = int.MaxValue;
-
-        PlayerPrefs.SetInt(Key, (int)total);
+        float total = Math.Min(GetCoins() + amount, float.MaxValue);
+        PlayerPrefs.SetFloat(BalanceKey, total);
         PlayerPrefs.Save();
-        CoinsChanged?.Invoke((int)total);
+        CoinsChanged?.Invoke(total);
     }
 
-    public static int GetCoins()
+    public static float GetCoins()
     {
-        return PlayerPrefs.GetInt(Key, 0);
+        return PlayerPrefs.HasKey(BalanceKey)
+            ? PlayerPrefs.GetFloat(BalanceKey)
+            : PlayerPrefs.GetInt(LegacyKey, 0);
+    }
+
+    internal static bool CanAfford(int cost)
+    {
+        return CoversCost(GetCoins(), cost);
+    }
+
+    internal static bool TrySpendCoins(float amount, Action stagePurchase)
+    {
+        if (!float.IsFinite(amount) || amount < 0f)
+            throw new ArgumentOutOfRangeException(nameof(amount));
+
+        float balance = GetCoins();
+        if (!CoversCost(balance, amount))
+            return false;
+
+        bool changesBalance = amount > 0f;
+        bool hasFloatBalance = PlayerPrefs.HasKey(BalanceKey);
+        float newBalance = Math.Max(0f, balance - amount);
+        if (changesBalance)
+            PlayerPrefs.SetFloat(BalanceKey, newBalance);
+
+        try
+        {
+            stagePurchase();
+        }
+        catch (PlayerPrefsException)
+        {
+            if (changesBalance)
+            {
+                if (hasFloatBalance)
+                    PlayerPrefs.SetFloat(BalanceKey, balance);
+                else
+                    PlayerPrefs.DeleteKey(BalanceKey);
+            }
+
+            throw;
+        }
+
+        // Flush both changes before notifying listeners that may read the new level.
+        PlayerPrefs.Save();
+        if (changesBalance)
+            CoinsChanged?.Invoke(newBalance);
+
+        return true;
+    }
+
+    private static bool CoversCost(float balance, float cost)
+    {
+        // Match the two-decimal balance shown in the UI when float arithmetic falls just below a cost.
+        return balance >= cost || Math.Round(balance, 2) >= cost;
     }
 
     public static void ResetCoins()
     {
-        PlayerPrefs.SetInt(Key, 0);
+        PlayerPrefs.SetFloat(BalanceKey, 0f);
         PlayerPrefs.Save();
-        CoinsChanged?.Invoke(0);
+        CoinsChanged?.Invoke(0f);
     }
 }

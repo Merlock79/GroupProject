@@ -75,6 +75,8 @@ public class ExplosionCooldownUI : MonoBehaviour
         {
             if (explosion == null)
                 statusLabel.text = "—";
+            else if (!explosion.IsUnlocked)
+                statusLabel.text = "ЗАКРИТО";
             else if (explosion.IsReady)
                 statusLabel.text = "ГОТОВО";
             else

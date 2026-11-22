@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/_LoopDash/Scenes/MainGame/MainMenu.unity
+    guid: 28b6dfc6118228842800b55c1de3397f
+  - enabled: 1
     path: Assets/_LoopDash/Scenes/MainGame/Level 1/Level 1.unity
     guid: cc477958afb2b6f4f9863f7e1be01f8a
   m_configObjects:

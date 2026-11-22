@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b2e891a3da04a58aaed6f6bd4fe4d13, type: 3}
+  m_Name: ExplosionUnlockUpgrade
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeDefinition
+  id: explosion.unlock
+  displayName: Unlock Explosion
+  description: Unlocks the cube's explosion on the right mouse button.
+  icon: {fileID: 21300000, guid: 2d2d75d383dae9b40b9b53a931127253, type: 3}
+  maxLevel: 1
+  basePrice: 0
+  priceMultiplier: 1.85
+  requirements: []
+  effect: {fileID: 11400000, guid: 76d24be5dbcd4bc783187062821319b4, type: 2}
