@@ -56,6 +56,8 @@ public class PlayerModeManager : MonoBehaviour
     public void SetMode(PlayerMode mode)
     {
         if (mode == CurrentMode || lastSwapFrame == Time.frameCount || CurrentPlayer == null) return;
+        if ((CurrentPlayer.TryGetComponent(out CubeController cube) && cube.IsDead) ||
+            (CurrentPlayer.TryGetComponent(out ShipController ship) && ship.IsDead)) return;
         GameObject prefab = GetPrefab(mode);
         if (prefab == null) return;
 

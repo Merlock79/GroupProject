@@ -63,7 +63,7 @@ public class ShipMovement : MonoBehaviour
 
         float horizontalTravel = collision.DistanceToSolid(position, Vector3.right, dx, out RaycastHit wallHit);
         position.x += horizontalTravel;
-        if (horizontalTravel + boxDeathSpeed < dx && wallHit.collider != null)
+        if (horizontalTravel + boxDeathSpeed * Time.fixedDeltaTime < dx && wallHit.collider != null)
         {
             body.MovePosition(position);
             hazardDetector.ReportFatalContact(wallHit.collider);

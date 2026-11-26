@@ -37,7 +37,7 @@ public class CubeExplosion : MonoBehaviour
     public float Cooldown => ((ExplosionCooldownEffect)cooldownUpgrade.Effect)
         .GetCooldown(ProgressionManager.Instance.GetActiveLevel(cooldownUpgrade));
     public float CooldownRemaining => Mathf.Max(0f, lastExplosionTime + Cooldown - Time.time);
-    public bool IsReady => IsUnlocked && CooldownRemaining == 0f;
+    public bool IsReady => isActiveAndEnabled && IsUnlocked && CooldownRemaining == 0f;
     public float CooldownProgress
     {
         get

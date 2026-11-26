@@ -29,6 +29,8 @@ public class CubeController : MonoBehaviour
         if (IsDead) return;
         IsDead = true;
 
+        if (TryGetComponent(out CubeInput input)) input.enabled = false;
+        if (TryGetComponent(out CubeExplosion explosion)) explosion.enabled = false;
         movement.enabled = false;
 
         Debug.Log($"Гравець загинув: зіткнення з {hazard.name}", hazard);
